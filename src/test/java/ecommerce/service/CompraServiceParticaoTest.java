@@ -50,7 +50,6 @@ public class CompraServiceParticaoTest {
         CarrinhoDeCompras carrinho = new CarrinhoDeCompras();
         carrinho.setItens(Arrays.asList(item));
 
-        // CORREÇÃO: O valor esperado foi atualizado para 362.60
         BigDecimal total = service.calcularCustoTotal(carrinho, cliente.getRegiao(), cliente.getTipo());
 
         assertThat(total).as("Cenário PE: Prata, Faixa D (60kg), Nordeste, Qtd=4, Frágil")
