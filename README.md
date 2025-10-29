@@ -1,5 +1,50 @@
 # Projeto dos Casos de Teste — eCommerce
 
+## Descrição do Projeto
+Este projeto implementa **cálculo do custo total** de uma compra em um sistema de e‑commerce e inclui uma suíte de **testes unitários robustos** (partições, limites, decisão e robustez) em **JUnit**. A API está estruturada em **Spring Boot**, com camadas de *controller*, *service* e *repository*, além de adaptadores externos simulados para estoque e pagamento.
+
+## Estrutura do Projeto
+```
+src/
+├── main/java/ecommerce/
+│   ├── controller/              # REST endpoints (CompraController)
+│   ├── dto/                     # Objetos de entrada/saída (CompraDTO, etc.)
+│   ├── entity/                  # Entidades do domínio (Carrinho, Produto, etc.)
+│   ├── external/                # Portas para serviços externos (estoque/pagamento)
+│   ├── external/fake/           # Implementações simuladas
+│   ├── repository/              # Persistência (Spring Data)
+│   ├── service/                 # Regras de negócio (CompraService, etc.)
+│   └── CompraApplication.java   # Spring Boot app
+└── test/java/ecommerce/service/
+    ├── CompraServiceParticaoTest.java
+    ├── CompraServiceValorLimiteTest.java
+    ├── CompraServiceDecisaoTest.java
+    ├── CompraServiceRobustezTest.java
+    └── TestHelper.java
+```
+
+## Como Executar o Projeto
+
+
+### Subir a aplicação (opcional)
+```bash
+./mvnw spring-boot:run
+```
+
+### Compilar
+```bash
+./mvnw clean compile
+```
+
+### Rodar os testes
+```bash
+./mvn test
+```
+
+### Verificar e gerar relatórios (inclui cobertura)
+```bash
+./mvn verify
+```
 ## 1. Contexto e Escopo
 
 - **Função testada:** `CompraService#calcularCustoTotal(CarrinhoDeCompras, Regiao, TipoCliente)`
