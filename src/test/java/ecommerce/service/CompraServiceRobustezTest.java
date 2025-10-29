@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import ecommerce.entity.CarrinhoDeCompras;
 import ecommerce.entity.Cliente;
+import ecommerce.entity.ItemCompra;
 import ecommerce.entity.Produto;
 import ecommerce.entity.Regiao;
 import ecommerce.entity.TipoCliente;
@@ -76,5 +78,31 @@ public class CompraServiceRobustezTest {
         assertThatThrownBy(() -> service.calcularCustoTotal(carrinhoValido, Regiao.SUDESTE, null))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Tipo de cliente não pode ser nulo.");
+    }
+
+    @Test
+    @DisplayName("Deve calcular corretamente quando 'fragil' for nulo (não adicionar taxa)")
+    public void robustez_quandoProdutoFragilNulo_naoAdicionaTaxa() {
+        // 1. Given
+        Cliente cliente = TestHelper.criarCliente(TipoCliente.BRONZE, Regiao.SUDESTE);
+        Produto produtoComFragilNulo = TestHelper.criarProduto("Produto", new BigDecimal("50.00"), new BigDecimal("6.0"), false);
+        produtoComFragilNulo.setFragil(null); // Força o campo 'fragil' a ser nulo
+
+        ItemCompra item = TestHelper.criarItem(produtoComFragilNulo, 1L);
+        CarrinhoDeCompras carrinho = new CarrinhoDeCompras();
+        carrinho.setItens(Arrays.asList(item));
+
+        // 2. When
+        // Subtotal: 50.00
+        // Frete: Peso 6kg, SE, Bronze.
+        //   (6*2) + 12 = 24.00
+        //   Taxa Frágil deve ser 0 (pois isFragil == null)
+        // Total: 50.00 + 24.00 = 74.00
+        BigDecimal total = service.calcularCustoTotal(carrinho, cliente.getRegiao(), cliente.getTipo());
+
+        // 3. Then
+        assertThat(total)
+            .as("Não deve adicionar taxa de R$5 se 'fragil' for nulo, cobrindo o '!= null' check")
+            .isEqualByComparingTo("74.00");
     }
 }
